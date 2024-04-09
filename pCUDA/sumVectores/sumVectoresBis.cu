@@ -34,7 +34,7 @@ int main (int argc, char *argv[])
   float  *Ad, *Bd, *Cd;
   int    cardinalidadVector, sizeVectorEnBytes, k;
   //tiempos de alocación
-  struct timeval ta, tb, t0b;
+  struct timeval ta, t0a, tb, t0b, tc, t0c, tk, t0k, tcp, t0cp;
 
   cardinalidadVector  = atoi(argv[1]);
   if ((cardinalidadVector%anchoBloque) != 0) {
@@ -50,11 +50,12 @@ int main (int argc, char *argv[])
 
   assert (gettimeofday (&t0, NULL) == 0);
   // Transferir A y B a la GPU
+  assert (gettimeofday (&ta, NULL) == 0);
   cudaMalloc ((void**) &Ad, sizeVectorEnBytes);
   cudaMemcpy (Ad, A, sizeVectorEnBytes, cudaMemcpyHostToDevice);
   //tiempos de alocación 
   assert (gettimeofday (&ta, NULL) == 0);
-  timersub(&ta, &t0, &t);
+  timersub(&ta, &t0a, &t);
   printf("Tiempo de alocar A en GPU: %ld:%ld\n", t.tv_sec, t.tv_usec);
   assert(gettimeofday (&t0b, NULL) == 0);
   cudaMalloc ((void**) &Bd, sizeVectorEnBytes);
@@ -64,13 +65,28 @@ int main (int argc, char *argv[])
   timersub(&tb, &t0b, &t);
   printf("Tiempo de alocar B en GPU: %ld:%ld\n", t.tv_sec, t.tv_usec);
   // Ubicar C en la GPU
+  assert (gettimeofday (&t0c, NULL) == 0);
   cudaMalloc ((void**) &Cd, sizeVectorEnBytes);
+  //tiempos de alocación
+  assert (gettiemofday (&tc, NULL) == 0);
+  timersub(&tc, &t0c, &t);
+  printf("Tiempo de alocar C en GPU: %ld:%ld\n", t.tv_sec, t.tv_usec);
   // Invocar al kernel
   // Poner la expresion adecuada
+  assert (gettimeofday (&t0k, NULL) == 0);
   sumVectorKernel<<<cardinalidadVector/anchoBloque, anchoBloque>>>(Ad, Bd, Cd);
   assert (cudaDeviceSynchronize() == 0);
+  //tiempo de ejecución de kernel
+  assert (gettimeofday (&tk, NULL) == 0);
+  timersub(&tk, t0k, &t);
+  print("Tiempo de ejecución del kernel: %ld:%ld\n", t.tv_sec, t.t.tv_usec);
   // Transferir C desde la GPU
+  assert(gettimeofday (&t0cp, NULL) == 0);
   cudaMemcpy (C, Cd, sizeVectorEnBytes, cudaMemcpyDeviceToHost);
+  assert(gettimeofday (&tcp, NULL) == 0);
+  //tiempo en realocar C en la CPU
+  timersub(&tcp, &t0cp, &t);
+  printf("Tiempo en realocar C en el CPU: %ld:%ld\n", t.tv_sec, t.tv_usec);
   // Liberar matrices en la GPU
   cudaFree(Ad); cudaFree(Bd); cudaFree(Cd);
   assert (gettimeofday (&tf, NULL) == 0);
