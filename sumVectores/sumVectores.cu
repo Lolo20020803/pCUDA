@@ -52,6 +52,7 @@ int main (int argc, char *argv[])
   assert (cudaMalloc ((void**) &Cd, sizeVectorEnBytes) == 0);
   // Invocar al kernel
   sumVectorKernel<<<1, cardinalidadVector>>>(Ad, Bd, Cd);
+  printf("ERROR: %d\n", cudaGetLastError());
   cudaDeviceSynchronize() == 0;
   // Transferir C desde la GPU
   cudaMemcpy (C, Cd, sizeVectorEnBytes, cudaMemcpyDeviceToHost);

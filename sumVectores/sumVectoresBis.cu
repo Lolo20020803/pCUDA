@@ -21,7 +21,7 @@ void initVector (float *V, int cardinalidad, float valor) {
 
 //-------------------------------------------------------------------
 __global__ void sumVectorKernel (float *Ad, float *Bd, float *Cd) {
-  int yo = ; // Rellenar con la expresion adecuada
+  int yo = blockIdx.x * anchoBloque + threadIdx.x; // Rellenar con la expresion adecuada
 
   Cd[yo] = Ad[yo] + Bd[yo];
 }
@@ -33,6 +33,8 @@ int main (int argc, char *argv[])
   float  *A,  *B,  *C;
   float  *Ad, *Bd, *Cd;
   int    cardinalidadVector, sizeVectorEnBytes, k;
+  //tiempos de alocación
+  struct timeval ta, tb, t0b;
 
   cardinalidadVector  = atoi(argv[1]);
   if ((cardinalidadVector%anchoBloque) != 0) {
@@ -50,12 +52,22 @@ int main (int argc, char *argv[])
   // Transferir A y B a la GPU
   cudaMalloc ((void**) &Ad, sizeVectorEnBytes);
   cudaMemcpy (Ad, A, sizeVectorEnBytes, cudaMemcpyHostToDevice);
+  //tiempos de alocación 
+  assert (gettimeofday (&ta, NULL) == 0);
+  timersub(&ta, &t0, &t);
+  printf("Tiempo de alocar A en GPU: %ld:%ld\n", t.tv_sec, t.tv_usec);
+  assert(gettimeofday (&t0b, NULL) == 0);
   cudaMalloc ((void**) &Bd, sizeVectorEnBytes);
   cudaMemcpy (Bd, B, sizeVectorEnBytes, cudaMemcpyHostToDevice);
+  //tiempos de alocaión
+  assert (gettimeofday (&tb, NULL) == 0);
+  timersub(&tb, &t0b, &t);
+  printf("Tiempo de alocar B en GPU: %ld:%ld\n", t.tv_sec, t.tv_usec);
   // Ubicar C en la GPU
   cudaMalloc ((void**) &Cd, sizeVectorEnBytes);
   // Invocar al kernel
   // Poner la expresion adecuada
+  sumVectorKernel<<<cardinalidadVector/anchoBloque, anchoBloque>>>(Ad, Bd, Cd);
   assert (cudaDeviceSynchronize() == 0);
   // Transferir C desde la GPU
   cudaMemcpy (C, Cd, sizeVectorEnBytes, cudaMemcpyDeviceToHost);
