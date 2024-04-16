@@ -19,7 +19,10 @@ void initVector (float *V, int cardinalidad, float valor) {
 
 //-------------------------------------------------------------------
 __global__ void sumVectorKernel (float *Ad, float *Bd, float *Cd, int cardinalidadVector) {
-  int i;
+  int i=0;
+  for(;i<cardinalidadVector;i++){
+	  Cd[i]=Ad[i]+Bd[i];
+  }
 
   // Rellenar adecuadamente
 }
@@ -49,7 +52,7 @@ int main (int argc, char *argv[])
   cudaMalloc ((void**) &Cd, sizeVectorEnBytes);
   assert (gettimeofday (&t0, NULL) == 0);
   // Invocar al kernel
-  // Rellenar adecuadamente
+  sumVectorKernel<<<1,1>>>(Ad,Bd,Cd,cardinalidadVector);
   assert (cudaDeviceSynchronize() == 0);
   assert (gettimeofday (&tf, NULL) == 0);
   // Transferir C desde la GPU
