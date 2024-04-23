@@ -77,7 +77,7 @@ void planoPixelAPunto (short fila, short columna, double *X, double *Y) {
 //--------------------------------------------------------------------
 __global__ void mandelKernel(double planoFactorXd, double planoFactorYd,
                              double planoVxd,      double planoVyd, 
-                             int maxIteracionesd,  int *coloresd)
+                             int maxIteracionesd,  int *coloresd,int filaf)
 {
   int fila, columna, i;
   double X, Y;
@@ -86,7 +86,7 @@ __global__ void mandelKernel(double planoFactorXd, double planoFactorYd,
   double pRealAnt, pImagAnt, distancia;
 
   // Determinar pixel
-  fila    = blockIdx.y*anchoBloque + threadIdx.y;
+  fila    = blockIdx.y*anchoBloque + threadIdx.y + filaf;
   columna = blockIdx.x*anchoBloque + threadIdx.x;
 
   // planoPixelAPunto
@@ -119,11 +119,14 @@ static void dibujar()
   planoMapear (FILAS, COLUMNAS,
                centroX, centroY, miAltura);
   // Invocar al kernel
-  dim3 dimGrid (FILAS/anchoBloque, COLUMNAS/anchoBloque);
+  dim3 dimGrid (COLUMNAS/anchoBloque,(FILAS/anchoBloque)/20);
   dim3 dimBlock(anchoBloque, anchoBloque);
-  mandelKernel<<<dimGrid, dimBlock>>>(planoFactorX, planoFactorY,
-                                      planoVx, planoVy,
-                                      mapiNumColoresDefinidos(), coloresd);
+  for(int filaf =0;filaf<FILAS;filaf+=48){
+	
+  	mandelKernel<<<dimGrid, dimBlock>>>(planoFactorX, planoFactorY,
+        	                              planoVx, planoVy,
+                	                      mapiNumColoresDefinidos(), coloresd,filaf);
+  }
   assert (cudaDeviceSynchronize() == 0);
   // Recoger matriz de colores
   assert (cudaMemcpy (colores, coloresd, sizeColores, cudaMemcpyDeviceToHost) == 0);
