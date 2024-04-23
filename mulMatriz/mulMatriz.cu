@@ -23,12 +23,12 @@ void initMatriz (double *M, int card, double valor) {
 //-------------------------------------------------------------------
 __global__ void mulMatrizKernel (double *Ad, double *Bd, double *Cd, int card) {
    int colF = blockIdx.x * anchoBloque + threadIdx.x;
-   int filoF = blockIdx.y*anchoBloque + threadIdx.y;
+   int filaF = blockIdx.y*anchoBloque + threadIdx.y;
    double  valor = 0.0;
-   for(int x =0;x<anchoBloque;x++){
-	   valor += Ad[filoF*card+x]*Bd[x*card+colF];
+   for(int x =0;x<card;x++){
+	   valor += Ad[filaF*card+x]*Bd[x*card+colF];
    }
-	Cd[filoF*card + colF] =valor;   
+	Cd[filaF*card + colF] =valor;   
 }
 
 //-------------------------------------------------------------------
