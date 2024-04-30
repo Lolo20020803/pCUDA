@@ -10,7 +10,7 @@
 #include <sys/time.h>
 #include <assert.h>
 
-#define anchoBloque 1024  // Threads por bloque
+#define anchoBloque 8  // Threads por bloque
 
 static int cardinalidad, *vOrg, *vOrgd; 
 
@@ -29,10 +29,14 @@ void visualizar (int *v) {
 __global__ void bitonicKernel (int *Ad, int paso, int salto) {
   int yo = blockIdx.x*anchoBloque+threadIdx.x;
   int iA, iB, ascendente, tmp;
+  
 
-  iA = ;         // Expresion que solo depende yo y de salto
+  int miAgrupacion = yo / salto; // yo = 7 en salto 2 => agrup =3
+
+  // iA = saltoAnt * miAgrup + yoEnLaAgrup
+  iA = ((salto * 2) * miAgrupacion) + (yo % salto);        // Expresion que solo depende yo y de salto
   iB = iA + salto;
-  ascendente = ; // Expresion que solo depende iA y de paso
+  ascendente =((iA /(paso*2))%2==0) ; // Expresion que solo depende iA y de paso
   if (   ( ascendente && (Ad[iA] > Ad[iB]))
       || (!ascendente && (Ad[iA] < Ad[iB])) ) {
     tmp    = Ad[iA];
