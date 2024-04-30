@@ -73,7 +73,7 @@ int main (int argc, char *argv[])
   assert (gettimeofday (&tf, NULL) == 0);
 
   timersub (&tf, &t0, &t);
-  visualizar(vOrg);
+  //visualizar(vOrg);
   printf ("\nTiempo (seg:mseg): %ld:%ld\n", t.tv_sec, t.tv_usec/1000);
   // Comprobar OK
   for (i=1; i<cardinalidad; i++) {

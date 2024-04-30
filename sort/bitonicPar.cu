@@ -10,7 +10,7 @@
 #include <sys/time.h>
 #include <assert.h>
 
-#define anchoBloque 8  // Threads por bloque
+#define anchoBloque 1024  // Threads por bloque
 
 static int cardinalidad, *vOrg, *vOrgd; 
 
