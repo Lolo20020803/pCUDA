@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <sys/time.h>
 
-#define anchoBloque 1024  // Threads por bloque
+#define anchoBloque 512  // Threads por bloque
 
 //-------------------------------------------------------------------
 void initVector (double *V, int cardinalidad, double valor) {
