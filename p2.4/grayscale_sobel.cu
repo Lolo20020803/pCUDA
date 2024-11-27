@@ -21,8 +21,8 @@ __global__ void RGBtoGrayscale(unsigned char *image, int width, int height, unsi
 		       	igY += i;
 			if(igX<0 || igX >= width || igY <0||igY>=height){return;}
 			int iG = igY * width + igX;
-			gradX += image[iG] * mulX[x][i];
-		        gradY += image[iG] * mulY[x][i];	
+			gradX += image[iG] * mulX[x+1][i+1];
+		        gradY += image[iG] * mulY[x+1][i+1];	
 			
 				
 		}
